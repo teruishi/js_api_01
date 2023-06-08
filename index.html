@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hacker News New Articles</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .translate {
+            width: 500px;
+            height: 400px;
+        }
+
+        .Japanese_title {
+            background-color: orange;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>Hacker News Translated Articles</h1>
+    <fieldset class="Japanese_title">
+        <ol id="article-list">Hacker NEWS（和訳）</ol>
+    </fieldset>
+    <fieldset>
+        <ol id="article-list_en">Hacker NEWS（原文）</ol>
+    </fieldset>
+
+
+    <script>
+        $.get('https://hacker-news.firebaseio.com/v0/newstories.json')
+
+
+    </script>
+    <script>
+        function translateText(text, en, ja) {
+            var apiKey = '';
+            var apiUrl = 'https://api-free.deepl.com/v2/translate';
+
+            return $.post(apiUrl, {
+                auth_key: apiKey,
+                text: text,
+                source_lang: en,
+                target_lang: ja
+            }).then(function (response) {
+                if (response.translations && response.translations.length > 0) {
+                    return response.translations[0].text;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+        $.get('https://hacker-news.firebaseio.com/v0/newstories.json')
+            .then(function (articleIds) {
+                var articleList = $('#article-list');
+                var articleList_en = $('#article-list_en');
+
+
+
+
+                articleIds.slice(0, 10).forEach(function (articleId) {
+                    $.get('https://hacker-news.firebaseio.com/v0/item/' + articleId + '.json')
+                        .then(function (articleData) {
+                            var listItem = $('<li></li>');
+                            var listItem_en = $('<li></li>');
+                            listItem.text(articleData.title);
+                            listItem_en.text(articleData.title);
+                            articleList.append(listItem);
+                            articleList_en.append(listItem_en);
+
+                            // 翻訳を行う
+                            translateText(articleData.title, 'en', 'ja')
+                                .then(function (translatedText) {
+                                    // 翻訳されたテキストを表示する
+                                    listItem.text(translatedText);
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
+                        })
+                });
+            })
+
+    </script>
+
+</body>
+
+</html>
