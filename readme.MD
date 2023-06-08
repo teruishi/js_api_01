@@ -10,7 +10,7 @@
 
 ## 工夫した点
 
-   -HackerNews APIによりNew記事のデータを取得後Deeplの APIにより翻訳
+   -HackerNews APIによりNew記事のデータを取得後Deeplの APIにより日本語に翻訳
     
 
 ## 苦戦した点
